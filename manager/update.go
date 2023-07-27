@@ -13,7 +13,7 @@ var filepath = os.Getenv("DATA_FILE_PATH")
 
 type TransactionDataFileForm = map[string]string
 
-func (service *BillingService) Update() error {
+func (service *DefaultBillingService) Update() error {
 
 	data, err := service.GetData()
 	if err != nil {
@@ -47,7 +47,7 @@ func (service *BillingService) Update() error {
 	return nil
 }
 
-func (b BillingService) GetData() (TransactionDataFileForm, error) {
+func (b DefaultBillingService) GetData() (TransactionDataFileForm, error) {
 	err := DownloadFile()
 	if err != nil {
 		return TransactionDataFileForm{}, err

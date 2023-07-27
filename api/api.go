@@ -2,10 +2,7 @@ package api
 
 import (
 	"alfa/common"
-	"alfa/db"
 	"alfa/manager"
-	"alfa/utils"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -30,12 +27,9 @@ func (service AdvencePayApiService) AdvancePay(c *gin.Context) {
 }
 
 func NewAdvanceApiService() AdvencePayApiService {
-	advanceClient, _ := utils.ConnectDB()
-	transactionClient, _ := utils.ConnectDB()
+	
+	billingService := manager.NewDefaultBillingService()
 	return AdvencePayApiService{
-		BillingService: manager.BillingService{
-			Advanceclient:     db.NewAdvanceService(advanceClient),
-			TransactionClient: db.NewTransactionService(transactionClient),
-		},
+		BillingService: billingService,
 	}
 }

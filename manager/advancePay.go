@@ -9,7 +9,7 @@ import (
 	"net/http"
 )
 
-func (service *BillingService) AdvancePay(advanceTransactionReq common.AdvanceTransactionReq) error {
+func (service *DefaultBillingService) AdvancePay(advanceTransactionReq common.AdvanceTransactionReq) error {
 
 	transactionReq := common.TransactionReq{
 		Src_bank_account: common.INTERNAL_BANK_ACCOUNT,
@@ -51,7 +51,7 @@ func (service *BillingService) AdvancePay(advanceTransactionReq common.AdvanceTr
 	return nil
 }
 
-func (service *BillingService) PerformTranscation(transactionReq common.TransactionReq) (string, error) {
+func (service *DefaultBillingService) PerformTranscation(transactionReq common.TransactionReq) (string, error) {
 	jsonData, err := json.Marshal(transactionReq)
 
 	if err != nil {

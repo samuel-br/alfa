@@ -1,21 +1,13 @@
 package main
 
 import (
-	"alfa/db"
-	"alfa/utils"
 	"alfa/manager"
 	"time"
 )
 
 func main() {
-	advanceClient, _ := utils.ConnectDB()
-	transactionClient, _ := utils.ConnectDB()
-
-	billingService := manager.BillingService{
-		Advanceclient:    db.NewAdvanceService(advanceClient),
-		TransactionClient: db.NewTransactionService(transactionClient),
 	
-	}
+	billingService := manager.NewDefaultBillingService()
 	interval := 12 * time.Hour
 	ticker := time.NewTicker(interval)
 

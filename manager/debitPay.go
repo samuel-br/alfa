@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func (service *BillingService) DebitPay() error {
+func (service *DefaultBillingService) DebitPay() error {
 	
 	advancePayToPreform, _ := service.Advanceclient.GetAdvancePayToPreform()
 
@@ -41,6 +41,6 @@ func (service *BillingService) DebitPay() error {
 	return nil
 }
 
-func (b BillingService) nextPayDateCal() string {
+func (b DefaultBillingService) nextPayDateCal() string {
 	return time.Now().AddDate(0, 0, 7).Format("2006-01-02")
 }
