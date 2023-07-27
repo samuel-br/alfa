@@ -1,6 +1,7 @@
+
 # alfa
 
-services
+**services**
 
 we have two services running independently 
 api service - the api for the call perform_advance
@@ -66,10 +67,5 @@ the process update the advance table too with the new debit transaction data(add
 after update the data debitPay function is triggered 
 query all the advance pay with the pay date of the current date that not completed yet
 and perform debit transaction on behalf 
-
-
-
-
-
 
 
