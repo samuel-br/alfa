@@ -1,71 +1,67 @@
+This project consists of two services: the API service and the Manager service. It utilizes a relational database (PostgreSQL) to store transaction and advance payment data.
 
-# alfa
+## Services
 
-**services**
+### API Service
 
-we have two services running independently 
-api service - the api for the call perform_advance
-manager service - responsible for the update of the data from the report file and perform the debit transaction
+The API service handles regular transactions and advance payments. It exposes endpoints to perform_advance and perform_transaction operations.
 
+### Manager Service
 
-**Database**
+The Manager service is responsible for updating data from the report file and performing debit transactions. It runs on a 12-hour interval to ensure periodic updates and debit transactions.
 
-a relational database (postgres) - 
+## Database
 
-**Schemas**
+The relational database (PostgreSQL) stores two schemas: 'transaction' and 'advance'.
 
-**transaction schema**
+### Transaction Schema
 
-- transaction_id -  the primary key is the transaction id we receive from the call to perform_transaction
-- amount - the amount money in transaction
-- src_bank_account - source bank account
-- dst_bank account - destination bank account
-- direction - debit/credit
-- status - pending/success/fail
-- src_transaction - the transaction source: the same as transaction id in regular transaction, if transaction is part of the debits - 
-   transaction of advance payment the source transaction will be the transaction id of the primary advance-pay transaction
+The 'transaction' schema contains information about regular transactions:
 
-**advance schema**
-- transaction_id -   the primary key is the transaction id we receive from the call to perform_transaction for the credit transaction when preform advance
-- dst_bank_account -  destination bank account
-- amount - the amount money in transaction
-- Debit_transaction - array contain all the transactions id related to this advance-pay
-- transaction - the number of success debit transaction 
-- next_pay_date - a date for the next debit transaction 
+- transaction_id (Primary Key): The transaction ID received from the call to perform_transaction.
+- amount: The amount of money in the transaction.
+- src_bank_account: Source bank account.
+- dst_bank_account: Destination bank account.
+- direction: Debit or credit.
+- status: Transaction status (pending/success/fail).
+- src_transaction: The transaction source (for advance payment transactions, it refers to the primary advance-pay transaction ID).
 
-relational database is a good match here because the data structure and the support of SQL for some of the query we need to perform
+### Advance Schema
 
+The 'advance' schema contains information about advance payment transactions:
 
-**classes**
-- We have two classes in the db package, each one is for a different table in the database.
-The class performs crud operations on the database using ORM objects.
+- transaction_id (Primary Key): The transaction ID received from the call to perform_transaction for credit transactions during advance payment.
+- dst_bank_account: Destination bank account for advance payment.
+- amount: The amount of money in the advance payment.
+- Debit_transaction: An array containing all the transaction IDs related to this advance payment.
+- transaction: The number of successful debit transactions related to the advance payment.
+- next_pay_date: The date for the next debit transaction.
 
-- Another main class is the BillingService class 
-this class injected with instances of the classes of the db package 
-and have the methods
-update - for updating the data from the report file
-advancePay - to perform advance payment
-debitPay - for managing the debit payments 
-getData - for getting the data of the report
-nextPayDateCal - for calculate the next pay date
-performTransaction -for perform regular transaction
+## Classes (in the db package)
 
+### TransactionClass
 
-**Flows**
-- system is up - the main function for the manager service defines an interval to perform an update for the transaction from the report file every 12 hours and only after to perform the debit transaction after the data is updated.
-In addition api service is up and listen for requests
+This class is responsible for CRUD operations on the 'transaction' table using ORM objects.
 
-- api triggered
-api service using Billing-service performs Advance-pay, first make a request for credit the amount to dst bank account then save the transaction_id in the transaction table
-and the advance-pay in the advance table and calculate the next debit pay
+### AdvanceClass
 
-- once every 12 hours(I used a time interval on the service itself for convenience, in production can use cron-job or similar) update is triggered \
-the function downloads the file, reads it and updates  the transaction table.
-If  a transaction have source transaction of advance pay transaction
-the process update the advance table too with the new debit transaction data(add the transaction id for the table) and if the status if success update the transaction made for this advance-pay
+This class is responsible for CRUD operations on the 'advance' table using ORM objects.
 
-after update the data debitPay function is triggered 
-query all the advance pay with the pay date of the current date that not completed yet
-and perform debit transaction on behalf 
+### BillingService Class
 
+The BillingService class is injected with instances of the TransactionClass and AdvanceClass and contains the following methods:
 
+- update: For updating data from the report file.
+- advancePay: To perform an advance payment, including crediting the amount to the destination bank account and saving the transaction ID in the 'transaction' table and the 'advance' table. The next debit payment date is calculated and stored.
+- debitPay: For managing debit payments, it queries all advance payments with the current date as the payment date (that are not completed yet) and performs debit transactions accordingly.
+- getData: For getting report data from the Manager service.
+- nextPayDateCal: For calculating the next payment date based on the Manager service's report data.
+- performTransaction: For performing regular transactions.
+
+## Flows
+
+1. The system starts up, with the Manager service defining an interval of 12 hours to perform an update for the transaction data from the report file and then perform debit transactions.
+2. The API service is up and listens for requests.
+3. The API service triggers the BillingService to perform an advance payment (perform_advance), which involves crediting the amount to the destination bank account and saving the transaction ID in the 'transaction' table and the 'advance' table. The next debit payment date is calculated and stored.
+4. Every 12 hours, the update is triggered in the Manager service, which downloads the report file, reads it, and updates the 'transaction' table. If a transaction has a source transaction of an advance payment transaction, the process updates the 'advance' table with new debit transaction data (adding the transaction ID to the table). If the status is successful, the transaction made for this advance payment is also updated.
+5. After updating the data, the debitPay function is triggered to query all advance payments with the current date as the payment date (that are not completed yet) and perform debit transactions accordingly
