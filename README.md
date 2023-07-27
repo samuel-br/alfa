@@ -15,21 +15,23 @@ a relational database (postgres) -
 **Schemas**
 
 **transaction schema**
-transaction_id -  the primary key is the transaction id we receive from the call to perform_transaction
-amount - the amount money in transaction
-src_bank_account - source bank account
-dst_bank account - destination bank account
-direction - debit/credit
-status - pending/success/fail
-src_transaction - the transaction source: the same as transaction id in regular transaction, if transaction is part of the debits transaction of advance payment the source transaction will be the transaction id of the primary advance-pay transaction
+
+- transaction_id -  the primary key is the transaction id we receive from the call to perform_transaction
+- amount - the amount money in transaction
+- src_bank_account - source bank account
+- dst_bank account - destination bank account
+- direction - debit/credit
+- status - pending/success/fail
+- src_transaction - the transaction source: the same as transaction id in regular transaction, if transaction is part of the debits - 
+   transaction of advance payment the source transaction will be the transaction id of the primary advance-pay transaction
 
 **advance schema**
-transaction_id -   the primary key is the transaction id we receive from the call to perform_transaction for the credit transaction when preform advance
-dst_bank_account -  destination bank account
-amount - the amount money in transaction
-Debit_transaction - array contain all the transactions id related to this advance-pay
-transaction - the number of success debit transaction 
-next_pay_date - a date for the next debit transaction 
+- transaction_id -   the primary key is the transaction id we receive from the call to perform_transaction for the credit transaction when preform advance
+- dst_bank_account -  destination bank account
+- amount - the amount money in transaction
+- Debit_transaction - array contain all the transactions id related to this advance-pay
+- transaction - the number of success debit transaction 
+- next_pay_date - a date for the next debit transaction 
 
 relational database is a good match here because the data structure and the support of SQL for some of the query we need to perform
 
