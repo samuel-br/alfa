@@ -37,10 +37,10 @@ relational database is a good match here because the data structure and the supp
 
 
 **classes**
-We have two classes in the db package, each one is for a different table in the database.
+- We have two classes in the db package, each one is for a different table in the database.
 The class performs crud operations on the database using ORM objects.
 
-Another main class is the BillingService class 
+- Another main class is the BillingService class 
 this class injected with instances of the classes of the db package 
 and have the methods
 update - for updating the data from the report file
@@ -52,14 +52,14 @@ performTransaction -for perform regular transaction
 
 
 **Flows**
-system is up - the main function for the manager service defines an interval to perform an update for the transaction from the report file every 12 hours and only after to perform the debit transaction after the data is updated.
+- system is up - the main function for the manager service defines an interval to perform an update for the transaction from the report file every 12 hours and only after to perform the debit transaction after the data is updated.
 In addition api service is up and listen for requests
 
-api triggered
+- api triggered
 api service using Billing-service performs Advance-pay, first make a request for credit the amount to dst bank account then save the transaction_id in the transaction table
 and the advance-pay in the advance table and calculate the next debit pay
 
-once every 12 hours(I used a time interval on the service itself for convenience, in production can use cron-job or similar) update is triggered \
+- once every 12 hours(I used a time interval on the service itself for convenience, in production can use cron-job or similar) update is triggered \
 the function downloads the file, reads it and updates  the transaction table.
 If  a transaction have source transaction of advance pay transaction
 the process update the advance table too with the new debit transaction data(add the transaction id for the table) and if the status if success update the transaction made for this advance-pay
